@@ -1,7 +1,9 @@
 	
 /ITL/scene/drop set txt "Drop";
 /ITL/scene/drop y 0.5;
-/ITL/scene/drop watch mouseDown ( /ITL/log write drop, /ITL/scene/faust/faust/drop 1);
+/ITL/scene/drop fontSize 32;
+/ITL/scene/drop show 0;
+/ITL/scene/drop watch mouseDown ( /ITL/log write drop, /ITL/scene/javascript run 'drop()');
 /ITL/scene/drop watch mouseUp   ( /ITL/scene/faust/faust/drop 0);
 
 /ITL/scene/freq set rect 1 0.1;

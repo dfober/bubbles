@@ -8,6 +8,8 @@
 	<title>INScore Tests</title>
 
 	<link href="fonts/fonts.css" rel="stylesheet">
+	<script src="lib/timesync.min.js"></script>
+	<script src="lib/comm.js"></script>
 	<script src="lib/libINScore.js"></script>
 	<script src="lib/libfaust-wasm.js"></script> 
 	<script src="lib/FaustLibrary.js"></script>
@@ -36,14 +38,17 @@ bubble(f0,trig) = os.osc(f) * (exp(-damp*time) : si.smooth(0.99))
 
 process = button("drop") : bubble(hslider("v:bubble/freq", 600, 150, 2000, 1)) <: dm.freeverb_demo;';
 /ITL/scene/faust show 0;
-/ITL/scene/faust watch ready ( /ITL/log write "faust ready", /ITL/scene/faust connect audioOutput );
+/ITL/scene/faust watch ready ( 
+	/ITL/log write "faust ready", 
+	/ITL/scene/faust connect audioOutput, 
+	/ITL/scene/drop show 1 
+);
 
-/ITL/scene watch READY ( /ITL/scene/faust connect audioOutput );
+/ITL/scene watch READY ( /ITL/scene/faust connect audioOutput, /ITL/scene/drop show 1 );
 /ITL/scene load 'bubble.inscore.txt';
 
 </pre>
 </div>
 
 </body>
-
 </html>

@@ -8,8 +8,9 @@
 	<title>INScore Tests</title>
 
 	<link href="fonts/fonts.css" rel="stylesheet">
+	<script src="lib/timesync.min.js"></script>
+	<script src="lib/comm.js"></script>
 	<script src="lib/libINScore.js"></script>
-	<script src="lib/libfaust-wasm.js"></script> 
 	<script src="lib/FaustLibrary.js"></script>
 	<script src="lib/INScoreJS.js"></script>
 	<style>
@@ -24,7 +25,7 @@
 <pre>
 
 /ITL/scene/faust set faustw 'faust.wasm' 'faust.json'; 
-/ITL/scene watch READY ( /ITL/scene/faust connect audioOutput );
+/ITL/scene watch READY ( /ITL/scene/faust connect audioOutput, /ITL/scene/drop show 1 );
 /ITL/scene load 'bubble.inscore.txt';
 
 </pre>
