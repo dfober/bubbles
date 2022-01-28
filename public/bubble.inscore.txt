@@ -16,6 +16,14 @@ freq = (
 	/ITL/scene/faust/faust/drop 1
 );
 
+/ITL/scene/flow set txt "200Hz";
+/ITL/scene/fhigh set txt "2000Hz";
+/ITL/scene/flow xorigin 1.4;
+/ITL/scene/flow x -0.5;
+/ITL/scene/fhigh xorigin -1.4;
+/ITL/scene/fhigh x 0.5;
+/ITL/scene/f[lh]* fontSize 32;
+
 /ITL/scene/freq watch mouseDown $freq;
 /ITL/scene/freq watch mouseUp ( /ITL/scene/faust/faust/drop 0 );
 
