@@ -1,0 +1,20 @@
+	
+/ITL/scene/drop set txt "Drop";
+/ITL/scene/drop y 0.5;
+/ITL/scene/drop watch mouseDown ( /ITL/log write drop, /ITL/scene/faust/faust/drop 1);
+/ITL/scene/drop watch mouseUp   ( /ITL/scene/faust/faust/drop 0);
+
+/ITL/scene/freq set rect 1 0.1;
+/ITL/scene/freq xorigin -1;
+/ITL/scene/freq x -0.5;
+/ITL/scene/freq color orange;
+freq = ( 
+	/ITL/log write freq '$x[200,2000]',
+	/ITL/scene/faust/faust/bubble/freq '$x[200,2000]',
+	/ITL/scene/faust/faust/drop 1
+);
+
+/ITL/scene/freq watch mouseDown $freq;
+/ITL/scene/freq watch mouseUp ( /ITL/scene/faust/faust/drop 0 );
+
+/ITL/scene event READY;

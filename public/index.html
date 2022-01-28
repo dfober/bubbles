@@ -1,0 +1,49 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+	<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" /> 
+	<meta http-equiv="Pragma" content="no-cache" /> 
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+	<title>INScore Tests</title>
+
+	<link href="fonts/fonts.css" rel="stylesheet">
+	<script src="lib/libINScore.js"></script>
+	<script src="lib/libfaust-wasm.js"></script> 
+	<script src="lib/FaustLibrary.js"></script>
+	<script src="lib/INScoreJS.js"></script>
+	<style>
+	body { margin: 50; background: gainsboro; height: 90%; }
+	.inscore { width: 90%; height: 90%; border-radius: 10px; font-size: 1px; background: white }
+	</style>
+</head>
+
+<body>
+
+<div class="inscore" id="scene">
+<pre>
+	
+/ITL/scene/faust set faust 
+'import("stdfaust.lib");
+bubble(f0,trig) = os.osc(f) * (exp(-damp*time) : si.smooth(0.99))
+	with {
+		damp = 0.043*f0 + 0.0014*f0^(3/2);
+		f = f0*(1+sigma*time);
+		sigma = eta * damp;
+		eta = 0.075;
+		time = 0 : (select2(trig>trig\'):+(1)) ~ _ : ba.samp2sec;
+	};
+
+process = button("drop") : bubble(hslider("v:bubble/freq", 600, 150, 2000, 1)) <: dm.freeverb_demo;';
+/ITL/scene/faust show 0;
+/ITL/scene/faust watch ready ( /ITL/log write "faust ready", /ITL/scene/faust connect audioOutput );
+
+/ITL/scene watch READY ( /ITL/scene/faust connect audioOutput );
+/ITL/scene load 'bubble.inscore.txt';
+
+</pre>
+</div>
+
+</body>
+
+</html>

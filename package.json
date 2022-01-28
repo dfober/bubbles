@@ -1,0 +1,15 @@
+{
+  "name": "huihui",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "update": "npm install && cp node_modules/@grame/inscorejs/libINScore.* node_modules/@grame/inscorejs/INScoreJS.js  node_modules/@grame/libfaust/libfaust-wasm.js node_modules/@grame/libfaust/libfaust-wasm.wasm  node_modules/@grame/libfaust/FaustLibrary.js node_modules/timesync/dist/timesync.min.js public/lib  && cp node_modules/@grame/libfaust/libfaust-wasm.data public",
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "@grame/inscorejs": "^1.1.1",
+    "express": "^4.17.2",
+    "ws" : "^8.4.0",
+    "timesync": "^1.0.10"
+  }
+}
