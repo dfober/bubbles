@@ -9,7 +9,7 @@ function connect (url) {
     if (ws) {
         ws.onmessage = function(msg) { receive (msg.data); };
         console.log ("Connected to", url)
-        // setInterval(() => { ws.send ('dummy'); }, 20000);
+        setInterval(() => { ws.send ('dummy'); }, 20000);
     }
     else console.log ("Failed to connect to", url);
 }
@@ -40,9 +40,6 @@ function playAt (date) {
     let msg = inscore.newMessage();
     inscore.msgAddF (msg, 1);
     setTimeout( () => { inscore.postMessage("/ITL/scene/faust/faust/drop", msg);}, delay);
-    let off = inscore.newMessage();
-    inscore.msgAddF (off, 0);
-    setTimeout( () => { inscore.postMessage("/ITL/scene/faust/faust/drop", off);}, delay + 50);
 }
 
 var gTime = timesync.create({
