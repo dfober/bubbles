@@ -41,6 +41,7 @@ process = button("drop") : bubble(hslider("v:bubble/freq", 600, 150, 2000, 1)) <
 /ITL/scene/faust watch ready ( 
 	/ITL/log write "faust ready", 
 	/ITL/scene/faust connect audioOutput, 
+	/ITL/scene/faust autoOff 1, 
 	/ITL/scene/drop show 1 
 );
 

@@ -15,10 +15,10 @@ function connect (url) {
 }
 
 function receive (data) {
-    console.log ("Receive", data);
     const parts = data.split(' ');
     switch (parts[0]) {
         case 'DROP': 
+            console.log ("Receive", data);
             playAt (parts[1]);
             break;
     }
