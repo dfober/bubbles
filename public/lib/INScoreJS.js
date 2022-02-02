@@ -947,9 +947,10 @@ var AIOScanner = /** @class */ (function () {
         AIOScanner.send(prefix + "/" + name, inputs, outputs);
     };
     AIOScanner.unlock = function () {
-        AIOScanner.fUnlockEvents.forEach(function (e) { return document.body.removeEventListener(e, AIOScanner.unlock); });
         AIOScanner.fAudioContext.resume();
         console.log("unlock", AIOScanner.fAudioContext);
+        if (AIOScanner.fAudioContext.state === "running")
+            AIOScanner.fUnlockEvents.forEach(function (e) { return document.body.removeEventListener(e, AIOScanner.unlock); });
     };
     AIOScanner.unlockAudioContext = function (audioCtx) {
         console.log("unlockAudioContext", audioCtx.state);
