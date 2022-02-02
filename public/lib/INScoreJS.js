@@ -89,7 +89,8 @@ var INScore = /** @class */ (function () {
             return this.fInscore.loadInscore(script, autoparse);
         }
         catch (err) {
-            console.log("Failed to load script: might be a math exception");
+            console.log("Failed to load script:");
+            console.log(script);
             return false;
         }
     };
@@ -98,7 +99,8 @@ var INScore = /** @class */ (function () {
             return this.fInscore.loadInscore2(script);
         }
         catch (err) {
-            console.log("Failed to load script: might be a math exception", err);
+            console.log("Failed to load script:");
+            console.log(script);
             return false;
         }
     };
@@ -1693,14 +1695,13 @@ var TMedia = /** @class */ (function (_super) {
 ///<reference path="AudioTools.ts"/>
 var JSAudioView = /** @class */ (function (_super) {
     __extends(JSAudioView, _super);
-    // fFile : string;
     function JSAudioView(parent) {
         var _this = this;
         var audio = document.createElement('audio');
         _this = _super.call(this, audio, parent) || this;
         _this.fAudio = audio;
+        _this.fAudio.preload = "auto";
         return _this;
-        // this.fFile = "";
     }
     JSAudioView.prototype.clone = function (parent) { return new JSAudioView(parent); };
     JSAudioView.prototype.toString = function () { return "JSAudioView"; };
@@ -2978,9 +2979,10 @@ var JSSceneView = /** @class */ (function (_super) {
         // for a yet unknown reason, removing the next line result in incorrect
         // children positionning (like if position becomes relative to the window)
         div.style.filter = "blur(0px)";
-        window.addEventListener("keydown", function (event) { event.preventDefault(); obj.keyEvent('keyDown', event.key); }, { capture: false });
-        window.addEventListener("keyup", function (event) { event.preventDefault(); obj.keyEvent('keyUp', event.key); }, { capture: false });
-        screen.orientation.addEventListener('change', function (e) { inscore.postMessageStr("/ITL/" + id, "refresh"); });
+        window.addEventListener("keydown", function (event) { if (event.key === ' ')
+            event.preventDefault(); obj.keyEvent('keyDown', event.key); }, { capture: false });
+        if (screen.orientation)
+            screen.orientation.addEventListener('change', function (e) { inscore.postMessageStr("/ITL/" + id, "refresh"); });
         MidiSetup.addListener(obj);
         return _this;
     }
@@ -3125,7 +3127,7 @@ var JSVideoView = /** @class */ (function (_super) {
         var video = document.createElement('video');
         _this = _super.call(this, video, parent) || this;
         _this.fVideo = video;
-        _this.fFile = "";
+        _this.fVideo.preload = "auto";
         return _this;
     }
     JSVideoView.prototype.clone = function (parent) { return new JSVideoView(parent); };
