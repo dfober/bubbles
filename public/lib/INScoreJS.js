@@ -918,13 +918,12 @@ var AIOScanner = /** @class */ (function () {
     }
     AIOScanner.init = function () {
         if (!AIOScanner.fAudioContext) {
-            // console.log ("AIOScanner.init");
             AIOScanner.fAudioContext = new (window.AudioContext || window.webkitAudioContext)();
             AIOScanner.unlockAudioContext(AIOScanner.fAudioContext);
             // document.onreadystatechange = function() {
-            //     // if (document.readyState === 'interactive') {
+            //     if (document.readyState === 'interactive') {
             //         AIOScanner.unlockAudioContext(AIOScanner.fAudioContext); 
-            //     // }
+            //     }
             // }
         }
     };
@@ -950,10 +949,10 @@ var AIOScanner = /** @class */ (function () {
     AIOScanner.unlock = function () {
         AIOScanner.fUnlockEvents.forEach(function (e) { return document.body.removeEventListener(e, AIOScanner.unlock); });
         AIOScanner.fAudioContext.resume();
-        // console.log ("unlock", AIOScanner.fAudioContext);
+        console.log("unlock", AIOScanner.fAudioContext);
     };
     AIOScanner.unlockAudioContext = function (audioCtx) {
-        // console.log ("unlockAudioContext", audioCtx);
+        console.log("unlockAudioContext", audioCtx.state);
         if (audioCtx.state !== "suspended")
             return;
         AIOScanner.fUnlockEvents.forEach(function (e) { return document.body.addEventListener(e, AIOScanner.unlock, false); });
@@ -1481,6 +1480,7 @@ var JSSvgBase = /** @class */ (function (_super) {
     }
     // basic svg objects are scaled to parent dimension by design
     JSSvgBase.prototype.parentScale = function () { return 1; };
+    JSSvgBase.prototype.setID = function (obj) { this.fSVG.id = obj.getID(); };
     JSSvgBase.prototype.updateDimensions = function (pos) {
         var w = Math.max(1, this.relative2SceneWidth(pos.width));
         var h = Math.max(1, this.relative2SceneHeight(pos.height));
@@ -1540,7 +1540,6 @@ var JSArcView = /** @class */ (function (_super) {
     function JSArcView(parent) {
         var _this = _super.call(this, parent) || this;
         _this.fArc = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        _this.getElement().className = "inscore-arc";
         _this.fSVG.appendChild(_this.fArc);
         return _this;
     }
@@ -1561,6 +1560,7 @@ var JSArcView = /** @class */ (function (_super) {
         var endPoint = JSArcView.getPoint(r1, r2, endAngle);
         var path = JSArcView.getPath(range, startPoint, endPoint, r1, r2, arc.closed);
         this.fArc.setAttribute('d', path);
+        this.setID(obj);
         return true;
     };
     // computes a point coordinates at a given angle
@@ -1664,6 +1664,7 @@ var TMedia = /** @class */ (function (_super) {
             obj.updateDuration(elt.duration * 1000);
             obj.setAudioInOut(this.getNumInputs(), this.getNumChans());
             obj.ready();
+            elt.id = obj.getID();
             // the connect message is intended to sync the model with the existing connection
             inscore.postMessageStrStr(obj.getOSCAddress(), "connect", AIOScanner.kOutputName);
             inscore.postMessageStrStr(obj.getOSCAddress(), "event", "ready");
@@ -1691,13 +1692,14 @@ var TMedia = /** @class */ (function (_super) {
 ///<reference path="AudioTools.ts"/>
 var JSAudioView = /** @class */ (function (_super) {
     __extends(JSAudioView, _super);
+    // fFile : string;
     function JSAudioView(parent) {
         var _this = this;
         var audio = document.createElement('audio');
         _this = _super.call(this, audio, parent) || this;
         _this.fAudio = audio;
-        _this.fFile = "";
         return _this;
+        // this.fFile = "";
     }
     JSAudioView.prototype.clone = function (parent) { return new JSAudioView(parent); };
     JSAudioView.prototype.toString = function () { return "JSAudioView"; };
@@ -1807,7 +1809,6 @@ var JSCurveView = /** @class */ (function (_super) {
     function JSCurveView(parent) {
         var _this = _super.call(this, parent) || this;
         _this.fCurve = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        _this.getElement().className = "inscore-curve";
         _this.fSVG.appendChild(_this.fCurve);
         return _this;
     }
@@ -1825,6 +1826,7 @@ var JSCurveView = /** @class */ (function (_super) {
             var bb = this.fSVG.getBBox();
             -this.updateObjectSize(obj, bb.width, bb.height);
         }
+        this.setID(obj);
         return true;
     };
     JSCurveView.prototype.relative2SceneCurve = function (x1, y1, x2, y2, x3, y3, x4, y4) {
@@ -1848,7 +1850,6 @@ var JSEllipseView = /** @class */ (function (_super) {
     function JSEllipseView(parent) {
         var _this = _super.call(this, parent) || this;
         _this.fEllipse = document.createElementNS('http://www.w3.org/2000/svg', 'ellipse');
-        _this.getElement().className = "inscore-ellipse";
         _this.fSVG.appendChild(_this.fEllipse);
         return _this;
     }
@@ -1856,6 +1857,10 @@ var JSEllipseView = /** @class */ (function (_super) {
     JSEllipseView.prototype.getSVGTarget = function () { return this.fEllipse; };
     JSEllipseView.prototype.toString = function () { return "JSEllipseView"; };
     JSEllipseView.prototype.getScale = function (scale) { return scale; };
+    JSEllipseView.prototype.updateSpecial = function (obj) {
+        this.setID(obj);
+        return true;
+    };
     JSEllipseView.prototype.updateSVGDimensions = function (w, h) {
         var rx = w / 2;
         var ry = h / 2;
@@ -2304,7 +2309,6 @@ var JSGMNView = /** @class */ (function (_super) {
         _this.fGR = null;
         _this.fPage = 0;
         _this.fScalingFactor = 2.3;
-        _this.getElement().className = "inscore-gmn";
         _this.fGuido = guido;
         _this.fGR = null;
         _this.fAR = null;
@@ -2375,6 +2379,7 @@ var JSGMNView = /** @class */ (function (_super) {
         }
         else
             console.error(obj.getOSCAddress() + " failed to parse gmn code.");
+        this.setID(obj);
         obj.ready();
         return ret;
     };
@@ -2492,9 +2497,7 @@ var JSGMNfView = /** @class */ (function (_super) {
 var JSHtmlView = /** @class */ (function (_super) {
     __extends(JSHtmlView, _super);
     function JSHtmlView(parent) {
-        var _this = _super.call(this, document.createElement('div'), parent) || this;
-        _this.getElement().className = "inscore-html";
-        return _this;
+        return _super.call(this, document.createElement('div'), parent) || this;
     }
     JSHtmlView.prototype.clone = function (parent) {
         var obj = new JSHtmlView(parent);
@@ -2502,6 +2505,7 @@ var JSHtmlView = /** @class */ (function (_super) {
         return obj;
     };
     JSHtmlView.prototype.toString = function () { return "JSHtmlView"; };
+    JSHtmlView.prototype.setID = function (obj) { this.getElement().id = obj.getID(); };
     // CSS weight are numbers
     JSHtmlView.fontWeight2Num = function (weight) {
         switch (weight) {
@@ -2556,6 +2560,7 @@ var JSHtmlView = /** @class */ (function (_super) {
     JSHtmlView.prototype.updateSpecial = function (obj) {
         var infos = obj.getTextInfos();
         this.setHtml(obj, this.getText(infos.text));
+        this.setID(obj);
         return true;
     };
     return JSHtmlView;
@@ -2570,6 +2575,7 @@ var JSHtmlfView = /** @class */ (function (_super) {
     JSHtmlfView.prototype.toString = function () { return "JSHtmlfView"; };
     JSHtmlfView.prototype.updateSpecial = function (obj) {
         var _this = this;
+        this.setID(obj);
         TFileLoader.load(this.getElement(), obj.getFile()).then(function (text) {
             if (text) {
                 return _this.setHtml(obj, text);
@@ -2607,6 +2613,7 @@ var JSImageView = /** @class */ (function (_super) {
     JSImageView.prototype.getScale = function (scale) { return scale; };
     JSImageView.prototype.updateSpecial = function (obj) {
         this.fImage.src = obj.getFile();
+        this.fImage.id = obj.getID();
         return this.updateSizeASync(obj);
     };
     JSImageView.prototype.setShadow = function (elt, val) {
@@ -2618,11 +2625,13 @@ var JSImageView = /** @class */ (function (_super) {
 var JSLayerView = /** @class */ (function (_super) {
     __extends(JSLayerView, _super);
     function JSLayerView(parent) {
-        var _this = _super.call(this, document.createElement('div'), parent) || this;
-        _this.getElement().className = "inscore-layer";
-        return _this;
+        return _super.call(this, document.createElement('div'), parent) || this;
     }
     JSLayerView.prototype.clone = function (parent) { return new JSLayerView(parent); };
+    JSLayerView.prototype.updateSpecial = function (obj) {
+        this.getElement().id = obj.getID();
+        return true;
+    };
     JSLayerView.prototype.toString = function () { return "JSLayerView"; };
     JSLayerView.prototype.parentScale = function () { return 1; };
     return JSLayerView;
@@ -2633,7 +2642,6 @@ var JSLineView = /** @class */ (function (_super) {
     function JSLineView(parent) {
         var _this = _super.call(this, parent) || this;
         _this.fLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        _this.getElement().className = "inscore-line";
         _this.fSVG.appendChild(_this.fLine);
         return _this;
     }
@@ -2655,6 +2663,7 @@ var JSLineView = /** @class */ (function (_super) {
         this.fLine.setAttribute('x2', x2.toString());
         this.fLine.setAttribute('y1', y1.toString());
         this.fLine.setAttribute('y2', y2.toString());
+        this.setID(obj);
         return true;
     };
     JSLineView.prototype.updatePenControl = function (pen) {
@@ -2675,9 +2684,7 @@ var JSLineView = /** @class */ (function (_super) {
 var JSPianoRollView = /** @class */ (function (_super) {
     __extends(JSPianoRollView, _super);
     function JSPianoRollView(parent, guido) {
-        var _this = _super.call(this, parent, guido) || this;
-        _this.getElement().className = "inscore-pianoroll";
-        return _this;
+        return _super.call(this, parent, guido) || this;
     }
     JSPianoRollView.prototype.clone = function (parent) { return new JSPianoRollView(parent, this.guido()); };
     JSPianoRollView.prototype.toString = function () { return "JSPianoRollView"; };
@@ -2741,7 +2748,6 @@ var JSPolygonView = /** @class */ (function (_super) {
     function JSPolygonView(parent) {
         var _this = _super.call(this, parent) || this;
         _this.fPolygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
-        _this.getElement().className = "inscore-polygon";
         _this.fSVG.appendChild(_this.fPolygon);
         return _this;
     }
@@ -2765,6 +2771,7 @@ var JSPolygonView = /** @class */ (function (_super) {
             strPoints += x + ',' + y + ' ';
         }
         this.fPolygon.setAttribute('points', strPoints);
+        this.setID(obj);
         return true;
     };
     return JSPolygonView;
@@ -2775,7 +2782,6 @@ var JSRectView = /** @class */ (function (_super) {
     function JSRectView(parent) {
         var _this = _super.call(this, parent) || this;
         _this.fRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-        _this.getElement().className = "inscore-rect";
         _this.fSVG.appendChild(_this.fRect);
         return _this;
     }
@@ -2791,6 +2797,7 @@ var JSRectView = /** @class */ (function (_super) {
         var radius = obj.getRadius();
         this.fRect.setAttribute('rx', radius.x.toString());
         this.fRect.setAttribute('ry', radius.y.toString());
+        this.setID(obj);
     };
     return JSRectView;
 }(JSSvgBase));
@@ -2798,9 +2805,7 @@ var JSRectView = /** @class */ (function (_super) {
 var JSSVGView = /** @class */ (function (_super) {
     __extends(JSSVGView, _super);
     function JSSVGView(parent) {
-        var _this = _super.call(this, parent) || this;
-        _this.getElement().className = "inscore-svg";
-        return _this;
+        return _super.call(this, parent) || this;
     }
     JSSVGView.prototype.clone = function (parent) { return new JSSVGView(parent); };
     JSSVGView.prototype.toString = function () { return "JSSVGView"; };
@@ -2816,6 +2821,7 @@ var JSSVGView = /** @class */ (function (_super) {
         this.fSVG.innerHTML = content;
         var bb = this.fSVG.getBBox();
         this.updateObjectSize(obj, bb.width + bb.x, bb.height + bb.y);
+        this.setID(obj);
         obj.ready();
         return true;
     };
@@ -2971,8 +2977,9 @@ var JSSceneView = /** @class */ (function (_super) {
         // for a yet unknown reason, removing the next line result in incorrect
         // children positionning (like if position becomes relative to the window)
         div.style.filter = "blur(0px)";
-        window.addEventListener("keydown", function (event) { obj.keyEvent('keyDown', event.key); }, { capture: false });
-        window.addEventListener("keyup", function (event) { obj.keyEvent('keyUp', event.key); }, { capture: false });
+        window.addEventListener("keydown", function (event) { event.preventDefault(); obj.keyEvent('keyDown', event.key); }, { capture: false });
+        window.addEventListener("keyup", function (event) { event.preventDefault(); obj.keyEvent('keyUp', event.key); }, { capture: false });
+        screen.orientation.addEventListener('change', function (e) { inscore.postMessageStr("/ITL/" + id, "refresh"); });
         MidiSetup.addListener(obj);
         return _this;
     }
@@ -3069,7 +3076,6 @@ var JSTextView = /** @class */ (function (_super) {
     __extends(JSTextView, _super);
     function JSTextView(parent) {
         var _this = _super.call(this, parent) || this;
-        _this.getElement().className = "inscore-txt";
         _this.getElement().style.whiteSpace = "nowrap";
         return _this;
     }
@@ -3094,6 +3100,7 @@ var JSTextfView = /** @class */ (function (_super) {
     JSTextfView.prototype.toString = function () { return "JSTextfView"; };
     JSTextfView.prototype.updateSpecial = function (obj) {
         var _this = this;
+        this.setID(obj);
         TFileLoader.load(this.getElement(), obj.getFile()).then(function (text) {
             if (text) {
                 return _this.setHtml(obj, _this.getText(text));
@@ -3152,7 +3159,6 @@ var JSXMLView = /** @class */ (function (_super) {
     __extends(JSXMLView, _super);
     function JSXMLView(parent, xmllib, guido) {
         var _this = _super.call(this, parent, guido) || this;
-        _this.getElement().className = "inscore-gmn";
         _this.fXMLLib = xmllib;
         return _this;
     }
