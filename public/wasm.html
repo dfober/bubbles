@@ -25,10 +25,8 @@
 <pre>
 
 /ITL/scene/faust set faustw 'faust.wasm' 'faust.json'; 
-/ITL/scene watch READY ( 
-	/ITL/scene/faust connect audioOutput, 
-	/ITL/scene/faust autoOff 1
-);
+/ITL/scene/faust autoOff 1;
+/ITL/scene watch READY ( /ITL/scene/faust connect audioOutput );
 /ITL/scene load 'bubble.inscore.txt';
 
 </pre>
