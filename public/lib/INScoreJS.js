@@ -2001,15 +2001,19 @@ var JSFaustView = /** @class */ (function (_super) {
             }
             var val = data.values;
             var n = val.size();
-            for (var i = 0; i < n; i++) {
+            var _loop_1 = function (i) {
                 var v = val.get(i);
                 // console.log ("JSFaustView.updateSpecific setParamValue ", v.address, v.value);
-                this.fAudioNode.setParamValue(v.address, v.value);
+                this_1.fAudioNode.setParamValue(v.address, v.value);
                 if (data.autoOff && (v.type == 0) && v.value) { // schedule the button off value
-                    var msg = inscore.newMessage();
-                    inscore.msgAddF(msg, 0);
-                    inscore.delayMessage(obj.getOSCAddress() + v.address, msg);
+                    var msg_1 = inscore.newMessage();
+                    inscore.msgAddF(msg_1, 0);
+                    setTimeout(function () { inscore.postMessage(obj.getOSCAddress() + v.address, msg_1); }, 50);
                 }
+            };
+            var this_1 = this;
+            for (var i = 0; i < n; i++) {
+                _loop_1(i);
             }
             if (this.fVoices) {
                 var node = this.fAudioNode;
