@@ -918,7 +918,7 @@ var AIOScanner = /** @class */ (function () {
     }
     AIOScanner.init = function () {
         if (!AIOScanner.fAudioContext) {
-            AIOScanner.fAudioContext = new (window.AudioContext || window.webkitAudioContext)();
+            AIOScanner.fAudioContext = new (window.webkitAudioContext || window.AudioContext)({ latencyHint: 0.00001 });
             AIOScanner.unlockAudioContext(AIOScanner.fAudioContext);
             // document.onreadystatechange = function() {
             //     if (document.readyState === 'interactive') {
