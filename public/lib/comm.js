@@ -16,12 +16,14 @@ function connect (url) {
 
 function receive (data) {
     const parts = data.split(' ');
+    console.log ("Receive", data);
     switch (parts[0]) {
         case 'DROP': 
-            console.log ("Receive", data);
             playAt (parts[1]);
             break;
-    }
+        case 'FREQ': 
+            freq (parseFloat(parts[1]));
+            break;    }
 }
 
 function drop () { 
@@ -35,11 +37,20 @@ function getDelay(date) {
     return (n > 0) ? n : 0;
 }
 
+function postMessageF (adr, val) {
+    let msg = inscore.newMessage();
+    inscore.msgAddF (msg, val);
+    inscore.postMessage(adr, msg)
+}
+
 function playAt (date) {
     let delay = getDelay(date);
-    let msg = inscore.newMessage();
-    inscore.msgAddF (msg, 1);
-    setTimeout( () => { inscore.postMessage("/ITL/scene/faust/faust/drop", msg);}, delay);
+    setTimeout( () => { postMessageF("/ITL/scene/faust/faust/drop", 1);}, delay);
+}
+
+function freq (freq) {
+    postMessageF("/ITL/scene/faust/faust/bubble/freq", freq);
+    playAt(gTime.now() + gNetMaxLatency);
 }
 
 var gTime = timesync.create({
